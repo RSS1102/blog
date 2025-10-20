@@ -16,7 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="page-bg">
           <Nav />
 
-          <main className="container">{children}</main>
+          <main>{children}</main>
 
           <footer className="footer">© {new Date().getFullYear()} My Blog</footer>
         </div>
