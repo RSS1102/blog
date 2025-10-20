@@ -50,7 +50,7 @@ export default async function BlogPage() {
     const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
       url: process.env.NODE_ENV === 'production' ? 'https://yourdomain.com' : 'http://localhost',
     });
-    globalThis.window = dom.window;
+    globalThis.window = dom.window as unknown as Window & typeof globalThis;
     globalThis.document = dom.window.document;
     globalThis.navigator = dom.window.navigator;
 
