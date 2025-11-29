@@ -7,6 +7,7 @@ export default function Nav() {
 
   const isActive = (path: string) => {
     if (path === "/") return pathname === "/";
+    if (path === "/blog") return pathname.startsWith("/blog") || pathname.startsWith("/blogs");
     return pathname.startsWith(path);
   };
 
@@ -18,7 +19,7 @@ export default function Nav() {
           <Link href="/" aria-current={isActive("/") ? "page" : undefined} data-active={isActive("/") ? "true" : undefined}>
             主页
           </Link>
-          <Link href="/blog" aria-current={isActive("/blog") ? "page" : undefined} data-active={isActive("/blog") ? "true" : undefined}>
+          <Link href="/blogs" aria-current={isActive("/blog") ? "page" : undefined} data-active={isActive("/blog") ? "true" : undefined}>
             博客
           </Link>
           <Link href="/about" aria-current={isActive("/about") ? "page" : undefined} data-active={isActive("/about") ? "true" : undefined}>
