@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import PageSection from '../../../../components/PageSection';
+import PageSection from '../../../components/PageSection';
 import { notFound } from 'next/navigation';
 
 type RepoInfo = {
@@ -14,7 +14,7 @@ async function fetchRepo(owner: string, repo: string): Promise<RepoInfo | null> 
     const res = await fetch(`https://api.github.com/repos/${owner}/${repo}`, { cache: 'no-store' });
     if (!res.ok) return null;
     return await res.json();
-  } catch (e) {
+  } catch {
     return null;
   }
 }
@@ -30,21 +30,22 @@ async function fetchReadme(owner: string, repo: string) {
       return buff.toString('utf-8');
     }
     return null;
-  } catch (e) {
+  } catch {
     return null;
   }
 }
 
-export async function generateMetadata({ params }: { params: { owner: string; repo: string } }): Promise<Metadata> {
-  const info = await fetchRepo(params.owner, params.repo);
+export async function generateMetadata({ params }: { params: Promise<{ owner: string; repo: string }> }): Promise<Metadata> {
+  const { owner, repo } = await params;
+  const info = await fetchRepo(owner, repo);
   return {
-    title: info?.full_name || `${params.owner}/${params.repo}`,
-    description: info?.description || `Project ${params.owner}/${params.repo}`,
+    title: info?.full_name || `${owner}/${repo}`,
+    description: info?.description || `Project ${owner}/${repo}`,
   };
 }
 
-export default async function ProjectPage({ params }: { params: { owner: string; repo: string } }) {
-  const { owner, repo } = params;
+export default async function ProjectPage({ params }: { params: Promise<{ owner: string; repo: string }> }) {
+  const { owner, repo } = await params;
   const info = await fetchRepo(owner, repo);
   if (!info) return notFound();
 
