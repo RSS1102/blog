@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import { Metadata } from 'next';
+import PageSection from '../components/PageSection';
 
 function extractMetadata(markdown: string) {
   const lines = markdown.split('\n');
@@ -56,14 +57,9 @@ export default async function BlogPage() {
   }
 
   return (
-    <>
-      <section className="list">
-        <div className="card glass full-width">
-          <h2 className='blog-title'>{postTitle}</h2>
-          <div className="blog-content" dangerouslySetInnerHTML={{ __html: htmlContent }} />
-        </div>
-      </section>
-    </>
+    <PageSection title={postTitle} variant="blog">
+      <div className="blog-content" dangerouslySetInnerHTML={{ __html: htmlContent }} />
+    </PageSection>
   );
 }
 

@@ -1,6 +1,9 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import Link from 'next/link';
+import { ParsedUrlQuery } from 'querystring';
+import Pagination from '../components/Pagination';
+import PageSection from '../components/PageSection';
 import { Metadata } from 'next';
 
 function extractMetadata(markdown: string) {
@@ -41,7 +44,7 @@ function extractMetadata(markdown: string) {
   return { title, description, date, tags };
 }
 
-export default async function BlogsPage() {
+export default async function BlogsPage({ searchParams }: { searchParams?: ParsedUrlQuery }) {
   // 本地模拟数据开关：设置为 true 时使用下面的 mock 数据（便于 UI 预览 / 后端未接入时使用）
   const USE_MOCK = true;
 
@@ -96,11 +99,18 @@ export default async function BlogsPage() {
     }));
   }
 
+  // 支持 ?page=1 查询参数（服务端分页 / 切片）
+  const pageSize = 5;
+  const pageNumber = parseInt(((searchParams && (searchParams.page as string)) || '1') as string, 10) || 1;
+  const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
+  const start = (pageNumber - 1) * pageSize;
+  const pagePosts = posts.slice(start, start + pageSize);
+
   return (
-    <>
-      <div className="blogs-container card glass">
+    <PageSection title="博客" subtitle="技术、工程、性能与实践" variant="blog">
+      <div className="blogs-container">
         <div className="blogs-grid">
-          {posts.map((post) => (
+          {pagePosts.map((post) => (
             <article key={post.slug} className="blog-card glass">
               {/* 两行布局：第一行 — 左侧标题 / 右侧最后更新；第二行 — 左侧 tags / 右侧 浏览人数 */}
               <div className="blog-card-row blog-card-row-top">
@@ -131,8 +141,12 @@ export default async function BlogsPage() {
             </article>
           ))}
         </div>
+
+        <div style={{ marginTop: 18 }}>
+          <Pagination basePath="/blogs" page={pageNumber} totalPages={totalPages} />
+        </div>
       </div>
-    </>
+    </PageSection>
   );
 }
 
