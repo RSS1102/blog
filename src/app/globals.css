@@ -520,11 +520,27 @@
 /* PR 标题悬停弹窗，绝对定位，不影响布局大小 */
 .pr-item {
   position: relative; /* tooltip 相对于每一条项定位 */
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 6px; /* vertical spacing so separators have breathing room */
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  transition: background 160ms ease, transform 160ms ease;
 }
 
+/* avoid drawing a bottom border for the last item in a list */
+.pr-item:last-child { border-bottom: none; }
+
+/* subtle hover effect to make each row more interactive and clearer visually */
+.pr-item:hover { background: linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.4)); transform: translateY(-1px); }
+
 .pr-title {
-  display: inline-block;
-  max-width: 220px;
+  /* use full available width inside the panel so truncation happens within the card
+     instead of overflowing the visual glass background. keep single-line truncation. */
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -901,9 +917,9 @@
 .stat .v { font-weight:700; font-size:1.25rem; }
 .stat .k { font-size:0.85rem; color: rgba(0,0,0,0.6); }
 
-@media (max-width: 880px) {
+@media (max-width: 900px) {
   .hero-inner { flex-direction: column; align-items: center; text-align: center; }
-  .hero-right { width: 100%; order: 2; }
+  .hero-right { width: 100%; order: 2; justify-content: center; }
   .hero-left { order: 1; }
   .avatar-shell { width:96px; height:96px; }
   /* on small screens, avoid hero being too tall — allow content to flow */
@@ -912,6 +928,11 @@
   .blob.b1 { width: 260px; height: 260px; left: -18%; top: -8%; filter: blur(28px); }
   .blob.b2 { width: 220px; height: 220px; right: -10%; bottom: -12%; filter: blur(24px); }
   .sparkles { opacity: 0.6; }
+
+  /* ensure the right-hand glass panel stretches to the full width of the card
+     at medium/smaller viewport sizes (e.g. 890px, 600px) so PR content fills
+     the outer hero card rather than appearing as a narrow floating panel */
+  .glass-panel { width: 100%; max-width: none; }
 }
 
 /* 更精细的移动端优化：确保 card 与内容在小屏幕上友好显示 */
@@ -930,12 +951,12 @@
 
   /* Right panel becomes full width under the hero content */
   .hero-right { order: 3; width: 100%; display: flex; justify-content: center; }
-  .glass-panel { width: 100%; max-width: 520px; padding: 10px; }
+  .glass-panel { width: 100%; max-width: none; padding: 10px; }
 
   /* PR items: allow title to use most of the width and ensure tooltip is centered
      and won't push the card width. Tooltip is shown on hover/focus; on mobile, focus works
      when the link is tapped in most browsers - we also show tooltip for :active to help touch users. */
-  .pr-title { max-width: calc(100% - 24px); }
+  .pr-title { width: calc(100% - 24px); }
   .pr-item:focus-within .pr-tooltip,
   .pr-item:active .pr-tooltip { display: block; }
   .pr-tooltip { left: 50%; transform: translateX(-50%); bottom: calc(100% + 8px); max-width: calc(100vw - 32px); }
@@ -943,7 +964,7 @@
 
 @media (max-width: 420px) {
   .hero-card { padding: 14px 10px; }
-  .pr-title { max-width: calc(100% - 18px); }
+  .pr-title { width: calc(100% - 18px); }
 }
 
 @media (max-width: 420px) {
