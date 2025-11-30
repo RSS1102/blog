@@ -11,6 +11,14 @@ RUN apt-get update \
 RUN corepack enable \
   && corepack prepare pnpm@8.10.0 --activate
 
+# 接收构建时的 Hasura endpoint（可在本地/CI 传入）
+ARG NEXT_PUBLIC_HASURA_ENDPOINT
+# 如果没有传入，默认值为空（或可改成 host.docker.internal 作为本地默认）
+ENV NEXT_PUBLIC_HASURA_ENDPOINT=${NEXT_PUBLIC_HASURA_ENDPOINT:-}
+
+# 增加 node 内存限制以防构建时 OOM（可按需调整）
+ENV NODE_OPTIONS=--max_old_space_size=4096
+
 # 利用缓存：先复制 package.json 与锁文件
 COPY package.json pnpm-lock.yaml* ./
 
@@ -19,6 +27,8 @@ RUN pnpm install --frozen-lockfile --prefer-offline || pnpm install --frozen-loc
 
 # 复制源代码并构建
 COPY . .
+
+# 如果构建时需要访问外部 Hasura，请确保 NEXT_PUBLIC_HASURA_ENDPOINT 指向 CI 可访问的地址
 RUN pnpm build
 
 # 运行时镜像
