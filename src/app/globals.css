@@ -442,6 +442,10 @@
   align-items: center;
 }
 
+/* visual tweaks to ensure project cards match blog cards appearance */
+.blog-card .blog-card-description { color: rgba(0,0,0,0.72); }
+.page-section .blog-card { min-height: 120px; }
+
 .blog-card-date {
   color: rgba(0, 0, 0, 0.6);
   font-size: 0.9rem;
@@ -519,6 +523,18 @@
   margin: 0 0 16px 0;
   color: rgba(0, 0, 0, 0.7);
   line-height: 1.5;
+}
+
+/* utility: clamp description to 3 lines and ensure fixed 3-line height when shorter */
+.truncate-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  /* standard property for modern browsers / lint */
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  /* 3 lines at 1.5 line-height => approx 4.5em height */
+  min-height: 4.5em;
 }
 
 .blog-card-meta {
