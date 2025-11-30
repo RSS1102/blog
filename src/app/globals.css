@@ -224,6 +224,44 @@
   backdrop-filter: blur(6px) saturate(110%);
 }
 
+/* Decorative logo — now used as the left-side site mark */
+.nav-signature {
+  /* weight / sizing */
+  font-weight: 900;
+  font-size: 0.98rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+
+  /* gradient text with fallback */
+  color: var(--accent);
+  background: linear-gradient(90deg, #ffdfe8 0%, #8f7cff 40%, #7ea6ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  /* slight tilt for artistic character but subtle to keep readability */
+  transform: rotate(-3deg) skewX(-3deg);
+
+  /* depth + glow */
+  text-shadow: 0 1px 0 rgba(255,255,255,0.22), 0 6px 16px rgba(121,75,255,0.12);
+  filter: drop-shadow(0 6px 10px rgba(126,166,255,0.06));
+
+  display: inline-block;
+  line-height: 1;
+  margin-right: 10px; /* spacing between logo and nav links */
+  transition: transform 280ms cubic-bezier(.2,.9,.2,1), opacity 260ms ease;
+}
+
+/* slightly larger and more pronounced on wide screens */
+@media (min-width: 1100px) {
+  .nav-signature { font-size: 1.12rem; transform: rotate(-2deg) skewX(-2deg); margin-right: 14px; }
+}
+
+@media (max-width: 520px) {
+  /* smaller screens: reduce transform and spacing to avoid crowding */
+  .nav-signature { font-size: 0.92rem; transform: none; margin-right: 6px; letter-spacing: 0.05em; }
+}
+
 .nav-inner {
   max-width: var(--nav-max-width);
   margin: 0 auto;

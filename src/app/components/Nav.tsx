@@ -14,7 +14,7 @@ export default function Nav() {
   return (
     <header className="nav glass">
       <div className="nav-inner">
-        <div className="logo"><Link href="/">RSS1102</Link></div>
+        <div className="nav-signature"><Link href="/">RSS1102</Link></div>
         <nav className="menu" aria-label="主导航">
           <Link href="/" aria-current={isActive("/") ? "page" : undefined} data-active={isActive("/") ? "true" : undefined}>
             主页
@@ -32,6 +32,7 @@ export default function Nav() {
             关于
           </Link>
         </nav>
+        {/* removed duplicate right-top signature — left logo now uses nav-signature */}
       </div>
     </header>
   );
