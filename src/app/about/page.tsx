@@ -49,7 +49,7 @@ export default async function AboutPage() {
 
         const payload = await res.json();
         return { ...r, stargazers_count: payload.stargazers_count ?? null };
-      } catch (err) {
+      } catch {
         // On network errors or unexpected exceptions, gracefully fallback
         return { ...r, stargazers_count: r.stargazers_count ?? null };
       }
