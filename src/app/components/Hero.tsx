@@ -5,7 +5,13 @@ import { useEffect, useState } from "react";
 export default function Hero() {
   const [languages, setLanguages] = useState<string[]>([]);
   const [loadingLangs, setLoadingLangs] = useState(true);
-  const [prs, setPrs] = useState<any[]>([]);
+  interface PRItem {
+    id: number;
+    title: string;
+    html_url?: string;
+    updated_at?: string;
+  }
+  const [prs, setPrs] = useState<PRItem[]>([]);
   const [loadingPrs, setLoadingPrs] = useState(true);
   const [prsTotal, setPrsTotal] = useState<number | null>(null);
 
@@ -26,7 +32,7 @@ export default function Hero() {
           .slice(0, 5)
           .map(([lang]) => lang);
         if (mounted) setLanguages(top);
-      } catch (e) {
+      } catch {
         // ignore
       } finally {
         if (mounted) setLoadingLangs(false);
@@ -47,7 +53,7 @@ export default function Hero() {
           // search API returns total_count to indicate more results
           setPrsTotal(typeof json.total_count === "number" ? json.total_count : null);
         }
-      } catch (e) {
+      } catch {
         // ignore
       } finally {
         if (mounted) setLoadingPrs(false);
@@ -125,7 +131,7 @@ export default function Hero() {
                           <span className="pr-title">{p.title}</span>
                         </a>
                         <div className="pr-tooltip" role="tooltip">{p.title}</div>
-                        <div style={{ fontSize: "0.8rem", color: "rgba(0,0,0,0.55)" }}>{repoName} · {new Date(p.updated_at).toLocaleDateString()}</div>
+                        <div style={{ fontSize: "0.8rem", color: "rgba(0,0,0,0.55)" }}>{repoName} · {p.updated_at ? new Date(p.updated_at).toLocaleDateString() : ''}</div>
                       </li>
                     );
                   })}

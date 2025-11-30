@@ -1,18 +1,18 @@
 import { notFound } from 'next/navigation';
-import PageSection from '../../../components/PageSection';
+import PageSection from '../../components/PageSection';
 import { RECORD_MODULES } from '../../../data/records';
 
-export default function ModulePage({ params }: { params: { module: string } }) {
-  const moduleSlug = params.module;
-  const module = RECORD_MODULES.find(m => m.slug === moduleSlug);
+export default async function ModulePage({ params }: { params: Promise<{ module: string }> }) {
+  const { module: moduleSlug } = await params;
+  const recordModule = RECORD_MODULES.find(m => m.slug === moduleSlug);
 
-  if (!module) {
+  if (!recordModule) {
     // If the module doesn't exist, show 404
     notFound();
   }
 
   return (
-    <PageSection title={module.title} subtitle={module.description}>
+    <PageSection title={recordModule.title} subtitle={recordModule.description}>
       <div style={{ marginTop: 8 }}>
         <p>该模块目前暂无具体条目 — 你可以稍后在对应模块下添加记录条目，或者我可以帮你初始化示例条目。</p>
         <div style={{ marginTop: 18 }}>

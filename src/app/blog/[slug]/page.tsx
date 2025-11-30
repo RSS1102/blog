@@ -28,13 +28,13 @@ function extractMetadata(markdown: string) {
 }
 
 interface BlogPostProps {
-  params: {
-    slug: string;
-  };
+  // Next's generated PageProps expects params to be a Promise-wrapped object
+  params: Promise<{ slug: string }>;
 }
 
 export default async function BlogPostPage({ params }: BlogPostProps) {
-  const { slug } = params;
+  // params may be a Promise according to Next's types — awaiting works for both Promise and direct values
+  const { slug } = await params;
   const postsDir = path.join(process.cwd(), 'src', 'posts');
   const filePath = path.join(postsDir, `${slug}.md`);
 
@@ -76,7 +76,7 @@ export default async function BlogPostPage({ params }: BlogPostProps) {
 }
 
 export async function generateMetadata({ params }: BlogPostProps): Promise<Metadata> {
-  const { slug } = params;
+  const { slug } = await params;
   const postsDir = path.join(process.cwd(), 'src', 'posts');
   const filePath = path.join(postsDir, `${slug}.md`);
 

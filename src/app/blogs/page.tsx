@@ -44,11 +44,20 @@ function extractMetadata(markdown: string) {
   return { title, description, date, tags };
 }
 
-export default async function BlogsPage({ searchParams }: { searchParams?: ParsedUrlQuery }) {
+export default async function BlogsPage({ searchParams }: { searchParams?: Promise<ParsedUrlQuery | undefined> }) {
   // 本地模拟数据开关：设置为 true 时使用下面的 mock 数据（便于 UI 预览 / 后端未接入时使用）
   const USE_MOCK = true;
 
-  const MOCK_POSTS = [
+  interface BlogPost {
+    slug: string;
+    title: string;
+    description: string;
+    date: string;
+    views: number;
+    tags: string[];
+  }
+
+  const MOCK_POSTS: BlogPost[] = [
     {
       slug: 'first-post',
       title: '在本地使用模拟数据展示列表',
@@ -78,7 +87,7 @@ export default async function BlogsPage({ searchParams }: { searchParams?: Parse
   const files = await fs.readdir(postsDir);
   const mdFiles = files.filter(file => file.endsWith('.md'));
 
-  let posts = [] as any[];
+  let posts: BlogPost[] = [];
   if (USE_MOCK) {
     // 使用模拟数据（先展示 mock）
     posts = MOCK_POSTS;
@@ -101,7 +110,9 @@ export default async function BlogsPage({ searchParams }: { searchParams?: Parse
 
   // 支持 ?page=1 查询参数（服务端分页 / 切片）
   const pageSize = 5;
-  const pageNumber = parseInt(((searchParams && (searchParams.page as string)) || '1') as string, 10) || 1;
+  // searchParams may be a Promise according to Next generated types — await it to handle both cases
+  const _searchParams = await (searchParams as Promise<ParsedUrlQuery | undefined> | ParsedUrlQuery | undefined);
+  const pageNumber = parseInt((((_searchParams && (_searchParams.page as string)) || '1') as string), 10) || 1;
   const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
   const start = (pageNumber - 1) * pageSize;
   const pagePosts = posts.slice(start, start + pageSize);
