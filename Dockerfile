@@ -1,60 +1,55 @@
-# Stage 1: Builder - 全量安装依赖并构建
-FROM node:20-alpine AS builder  # 改用更小的 Alpine 基础镜像
+# 第一阶段：依赖安装阶段
+FROM node:20-alpine AS deps
+# 安装必要的系统库（如libc6-compat），某些Node.js模块可能需要它[5](@ref)
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# 安装构建时必要的系统依赖（Alpine 使用 apk）
-RUN apk add --no-cache --virtual .build-deps \
-    build-base \
-    python3 \
-    git \
-    && rm -rf /var/cache/apk/*
+# 复制包管理文件
+COPY package.json pnpm-lock.yaml* ./
+# 安装依赖（使用frozen-lockfile确保依赖版本一致）
+RUN corepack enable && pnpm install --frozen-lockfile
 
-# 激活 corepack 并指定 pnpm 版本
-RUN corepack enable && corepack prepare pnpm@8.10.0 --activate
+# 第二阶段：构建阶段
+FROM node:20-alpine AS builder
+WORKDIR /app
 
-# 接收构建时的环境变量
-ARG NEXT_PUBLIC_HASURA_ENDPOINT
-ENV NEXT_PUBLIC_HASURA_ENDPOINT=${NEXT_PUBLIC_HASURA_ENDPOINT:-}
-ENV NODE_OPTIONS=--max_old_space_size=4096
-
-# 利用 Docker 缓存层：先拷贝锁文件和清单
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
-
-# 复制源文件并执行构建
+# 从deps阶段复制已安装的node_modules
+COPY --from=deps /app/node_modules ./node_modules
+# 复制源代码
 COPY . .
+
+# 设置构建环境变量
+ENV NEXT_TELEMETRY_DISABLED=1
+# 确保构建阶段也设置NODE_ENV为production，以优化构建输出[4](@ref)
+ENV NODE_ENV=production
+
+# 执行构建
 RUN pnpm build
 
-# Stage 2: Runner - 最小化生产镜像
+# 第三阶段：运行阶段
 FROM node:20-alpine AS runner
 WORKDIR /app
 
 # 设置生产环境变量
 ENV NODE_ENV=production
-ENV PORT=3000
-ENV NEXT_TELEMETRY_DISABLED=1  # 禁用遥测
+ENV NEXT_TELEMETRY_DISABLED=1
+# 让Next.js应用监听所有网络接口，而不仅仅是localhost[3](@ref)
+ENV HOSTNAME="0.0.0.0"
 
-# 创建非 root 用户（Alpine 使用特定语法）
-RUN addgroup -S app && adduser -S app -G app
+# 创建非root用户运行应用，增强安全性[5,7](@ref)
+RUN addgroup -g 1001 -S nodejs && adduser -S nextjs -u 1001
 
-# 启用 corepack
-RUN corepack enable && corepack prepare pnpm@8.10.0 --activate
+# 从构建阶段复制必要的文件，并设置正确的所有者
+COPY --from=builder /app/public ./public
+# 为Next.js的standalone输出模式做准备
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# 仅复制运行所需的最少文件
-COPY --from=builder --chown=app:app /app/package.json ./
-COPY --from=builder --chown=app:app /app/pnpm-lock.yaml ./
-# 安装生产依赖（如果直接使用 builder 的 node_modules 可注释掉下一行，但镜像会更大）
-RUN pnpm install --frozen-lockfile --prod
+# 切换到非root用户
+USER nextjs
 
-# 拷贝构建产物（关键优化：使用 Next.js standalone 输出）
-COPY --from=builder --chown=app:app /app/.next/standalone ./
-COPY --from=builder --chown=app:app /app/.next/static ./.next/static
-COPY --from=builder --chown=app:app /app/public ./public
-
-USER app
+# 暴露端口
 EXPOSE 3000
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost:3000/ || exit 1  # 健康检查端点可自定义
-
-CMD ["node", "server.js"]  # Standalone 模式直接启动 server.js
+# 启动应用
+CMD ["node", "server.js"]
