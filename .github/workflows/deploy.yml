@@ -1,9 +1,6 @@
-name: Build and publish to GHCR
+name: Build and publish to GHCR and Tencent CCR
 
 on:
-  push:
-    branches:
-      - dev
   pull_request:
     branches:
       - dev
