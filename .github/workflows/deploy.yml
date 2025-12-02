@@ -53,7 +53,7 @@ jobs:
         with:
           context: .
           file: Dockerfile
-          push: ${{ github.event_name == 'push' }}
+          #  push: ${{ github.event_name == 'push' }}
           tags: |
             ghcr.io/${{ steps.owner.outputs.owner }}/blog:dev
             ccr.ccs.tencentyun.com/${{ steps.owner.outputs.owner }}/blog:dev
