@@ -36,9 +36,13 @@ jobs:
         if: ${{ github.event_name == 'push' }}
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          registry-auth: |
+            - registry: ghcr.io
+              username: ${{ github.actor }}
+              password: ${{ secrets.GITHUB_TOKEN }}
+            - registry: ccr.ccs.tencentyun.com
+              username: ${{ secrets.TENCENT_CCR_USERNAME }}
+              password: ${{ secrets.TENCENT_CCR_PASSWORD }}
 
       - name: Login to Tencent (only on push)
         # if: ${{ github.event_name == 'push' }}
@@ -48,12 +52,19 @@ jobs:
           username: ${{ secrets.TENCENT_CCR_USERNAME }}
           password: ${{ secrets.TENCENT_CCR_PASSWORD }}
 
-      - name: Build (and push only on push)
+      - name: Push GHCR (and push only on push)
         uses: docker/build-push-action@v5
         with:
           context: .
           file: Dockerfile
-          #  push: ${{ github.event_name == 'push' }}
-          tags: |
-            ghcr.io/${{ steps.owner.outputs.owner }}/blog:dev
-            ccr.ccs.tencentyun.com/${{ steps.owner.outputs.owner }}/blog:dev
+          push: ${{ github.event_name == 'push' }}
+          tags: ghcr.io/${{ steps.owner.outputs.owner }}/blog:dev
+           
+
+      - name: Push Tencent (and push only on push)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          push: ${{ github.event_name == 'push' }}
+          tags: ccr.ccs.tencentyun.com/${{ steps.owner.outputs.owner }}/blog:dev
