@@ -1,0 +1,45 @@
+name: Build and publish to Tencent CCR
+
+on:
+    push:
+        branches:
+            - dev
+permissions:
+    contents: read
+    packages: write
+    id-token: write
+
+jobs:
+    tencent-ccr-push:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Set up QEMU
+              uses: docker/setup-qemu-action@v3
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            # 把仓库 owner 强制转小写，保存为 step 输出
+            - name: Set lowercase owner
+              id: owner
+              run: |
+                  echo "owner=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+            - name: Login to Tencent CCR
+              if: ${{ github.event_name == 'push' }}
+              uses: docker/login-action@v3
+              with:
+                  registry: ccr.ccs.tencentyun.com
+                  username: ${{ secrets.TENCENT_CCR_USERNAME }}
+                  password: ${{ secrets.TENCENT_CCR_PASSWORD }}
+
+            - name: Build and Push to Tencent CCR
+              uses: docker/build-push-action@v5
+              with:
+                  context: .
+                  file: Dockerfile
+                  push: ${{ github.event_name == 'push' }}
+                  tags: ccr.ccs.tencentyun.com/${{ steps.owner.outputs.owner }}/blog:dev
