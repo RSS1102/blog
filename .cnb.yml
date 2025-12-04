@@ -2,7 +2,7 @@
 dev:
   push:
     - imports:
-        - ./rss1102-secret/blog.yml
+        - https://cnb.cool/rss1102.cnb/rss1102-secret/-/blob/main/blog.yml
         - $GITHUB_BLOG_TOKEN  
     - stages:
         # 同步代码到 github 仓库
