@@ -1,10 +1,11 @@
 # .cnb.yml
-main:
+dev:
   push:
     - imports:
         - ./blog.yml
         - $GITHUB_BLOG_TOKEN  
     - stages:
+        # 同步代码到 github 仓库
         - name: sync to github
           image: tencentcom/git-sync
           settings:
