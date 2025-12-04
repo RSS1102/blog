@@ -3,7 +3,6 @@ dev:
   push:
     - imports:
         - https://cnb.cool/rss1102.cnb/rss1102-secret/-/blob/main/blog.yml
-        - $GITHUB_BLOG_TOKEN  
     - stages:
         # 同步代码到 github 仓库
         - name: sync to github
@@ -11,8 +10,9 @@ dev:
           settings:
             target_url: https://github.com/RSS1102/blog.git
             auth_type: https
-            username: rss1102
+            username: RSS1102
             password: ${GITHUB_BLOG_TOKEN}
+            branch: dev
 
         # 同名镜像构建&推送
         - name: docker build
