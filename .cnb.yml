@@ -1,0 +1,14 @@
+# .cnb.yml
+main:
+  push:
+    - imports:
+        - ./blog.yml
+        - $GITHUB_BLOG_TOKEN  
+    - stages:
+        - name: sync to github
+          image: tencentcom/git-sync
+          settings:
+            target_url: https://github.com/RSS1102/blog.git
+            auth_type: https
+            username: RSS1102
+            password: ${GITHUB_BLOG_TOKEN}
