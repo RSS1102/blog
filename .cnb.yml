@@ -19,7 +19,11 @@ dev:
         # 同名镜像构建&推送
         - name: docker build
           image: docker:latest
+          volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
           script: docker build -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dev .
         - name: docker push
           image: docker:latest
+          volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
           script: docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dev
