@@ -18,6 +18,6 @@ dev:
 
         # 同名镜像构建&推送
         - name: docker build
-          script: docker build -t docker.cnb.cool/{repository-path}:dev .
+          script: docker build -t docker.cnb.cool/rss1102/blog:dev .
         - name: docker push
-          script: docker push docker.cnb.cool/{repository-path}:dev
+          script: docker push docker.cnb.cool/rss1102/blog:dev
