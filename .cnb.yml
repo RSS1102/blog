@@ -2,7 +2,7 @@
 dev:
   push:
     - imports:
-        - ./blog.yml
+        - ./rss1102-secret/blog.yml
         - $GITHUB_BLOG_TOKEN  
     - stages:
         # 同步代码到 github 仓库
