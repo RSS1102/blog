@@ -25,22 +25,20 @@ WORKDIR /app
 
 # 设置生产环境变量
 ENV NODE_ENV=production
-# 建议也在此阶段设置 pnpm 环境变量，如果你打算用 pnpm 启动
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
 
 # 创建非 root 用户运行应用，增强安全性
 RUN addgroup -g 1001 -S nodejs && adduser -u 1001 -S nextjs -G nodejs
 
 # 从构建阶段复制必要的文件
 COPY --from=base --chown=nextjs:nodejs /app/public ./public
-# 关键：复制构建输出。如果使用 Next.js 的 standalone 模式，路径可能是 `/app/.next/standalone`
-COPY --from=base --chown=nextjs:nodejs /app/.next ./.next
+# 复制 standalone 模式的构建输出
+COPY --from=base --chown=nextjs:nodejs /app/.next/standalone .
+# 复制静态资源
+COPY --from=base --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
 
 EXPOSE 3000
 
-# 启动命令：根据你的项目配置，可能是 "node", "server.js" 或 "pnpm", "start"
-CMD ["pnpm", "start"]
+# standalone 模式下直接运行编译后的 Node.js 应用
+CMD ["node", "server.js"]

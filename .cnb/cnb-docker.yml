@@ -1,0 +1,9 @@
+main:
+  push:
+    - services:
+        - docker
+      stages:
+        - name: docker build
+          script: docker build -t rss1102/blog:dev .
+        - name: docker push
+          script: docker push rss1102/blog:dev
