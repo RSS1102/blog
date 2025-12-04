@@ -18,7 +18,7 @@ dev:
 
         # 同名镜像构建&推送
         - name: docker login
-          script: docker login docker.cnb.cool -u cnb -p ${blog}
+          script: docker login docker.cnb.cool -u cnb -p ${BLOG_DOCKER}
         - name: docker build
           script: docker build -t docker.cnb.cool/rss1102/blog:dev .
         - name: docker push
