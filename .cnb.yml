@@ -16,7 +16,7 @@ dev:
         #     password: ${GITHUB_BLOG_TOKEN}
         #     branch: dev
 
-        # 同名镜像构建&推送
+        # 同名镜像构建&推送 https://docs.cnb.cool/zh/artifact/docker.html#deng-lu-cnb-docker-zhi-pin-ku
         - name: docker login
           script: docker login docker.cnb.cool -u cnb -p ${CNB_TOKEN}
         - name: docker build
