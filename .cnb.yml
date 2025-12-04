@@ -5,7 +5,7 @@ dev:
     #     - https://cnb.cool/rss1102.cnb/rss1102-secret/-/blob/main/blog.yml
     - services:
         - docker
-    - stages:
+      stages:
         # 同步代码到 github 仓库
         # - name: sync to github
         #   image: tencentcom/git-sync
@@ -18,12 +18,6 @@ dev:
 
         # 同名镜像构建&推送
         - name: docker build
-          image: docker:latest
-          volumes:
-            - /var/run/docker.sock:/var/run/docker.sock
-          script: docker build -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dev .
+          script: docker build -t docker.cnb.cool/{repository-path}:dev .
         - name: docker push
-          image: docker:latest
-          volumes:
-            - /var/run/docker.sock:/var/run/docker.sock
-          script: docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dev
+          script: docker push docker.cnb.cool/{repository-path}:dev
