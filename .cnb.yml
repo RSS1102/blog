@@ -18,6 +18,8 @@ dev:
 
         # 同名镜像构建&推送
         - name: docker build
+          image: docker:latest
           script: docker build -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dev .
         - name: docker push
+          image: docker:latest
           script: docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dev
