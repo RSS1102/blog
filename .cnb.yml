@@ -20,6 +20,6 @@ dev:
         - name: docker login
           script: docker login docker.cnb.cool -u cnb -p ${CNB_TOKEN}
         - name: docker build
-          script: docker build -t docker.cnb.cool/rss1102/blog:dev .
+          script: docker build -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dev .
         - name: docker push
-          script: docker push docker.cnb.cool/rss1102/blog:dev
+          script: docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dev
