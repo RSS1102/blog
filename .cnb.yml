@@ -1,8 +1,10 @@
 # .cnb.yml
 dev:
   push:
-    - imports:
-        - https://cnb.cool/rss1102.cnb/rss1102-secret/-/blob/main/blog.yml
+    # - imports:
+    #     - https://cnb.cool/rss1102.cnb/rss1102-secret/-/blob/main/blog.yml
+    - docker:
+        image: node:20
     - stages:
         # 同步代码到 github 仓库
         # - name: sync to github
