@@ -6,7 +6,7 @@ dev:
     - services:
         - docker
       stages:
-        # 同步代码到 github 仓库
+        # cnb 同步代码到 github 仓库
         - name: sync to github
           image: tencentcom/git-sync
           settings:
