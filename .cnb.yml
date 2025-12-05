@@ -11,7 +11,7 @@ dev:
           image: tencentcom/git-sync
           settings:
             target_url: https://github.com/RSS1102/blog.git
-            auth_type: https
+            auth_type: ssh
             username: RSS1102
             password: ${GITHUB_BLOG_TOKEN}
             branch: dev
