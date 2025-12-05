@@ -11,10 +11,12 @@ dev:
           image: tencentcom/git-sync
           settings:
             target_url: https://github.com/RSS1102/blog.git
-            auth_type: ssh
+            auth_type: https
             username: RSS1102
             password: ${GITHUB_BLOG_TOKEN}
             branch: dev
+            insecure_skip_verify: true
+            timeout: 300
 
         # 同名镜像构建&推送 https://docs.cnb.cool/zh/artifact/docker.html#deng-lu-cnb-docker-zhi-pin-ku
         # - name: docker login
