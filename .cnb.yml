@@ -7,19 +7,19 @@ dev:
         - docker
       stages:
         # 同步代码到 github 仓库
-        # - name: sync to github
-        #   image: tencentcom/git-sync
-        #   settings:
-        #     target_url: https://github.com/RSS1102/blog.git
-        #     auth_type: https
-        #     username: RSS1102
-        #     password: ${GITHUB_BLOG_TOKEN}
-        #     branch: dev
+        - name: sync to github
+          image: tencentcom/git-sync
+          settings:
+            target_url: https://github.com/RSS1102/blog.git
+            auth_type: https
+            username: RSS1102
+            password: ${GITHUB_BLOG_TOKEN}
+            branch: dev
 
         # 同名镜像构建&推送 https://docs.cnb.cool/zh/artifact/docker.html#deng-lu-cnb-docker-zhi-pin-ku
-        - name: docker login
-          script: docker login docker.cnb.cool -u cnb -p ${CNB_TOKEN}
-        - name: docker build
-          script: docker build -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dev .
-        - name: docker push
-          script: docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dev
+        # - name: docker login
+        #   script: docker login docker.cnb.cool -u cnb -p ${CNB_TOKEN}
+        # - name: docker build
+        #   script: docker build -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dev .
+        # - name: docker push
+        #   script: docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dev
