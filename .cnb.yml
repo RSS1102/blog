@@ -1,5 +1,5 @@
 # .cnb.yml
-dev:
+"**":
   push:
     - imports:
         - https://cnb.cool/rss1102.cnb/rss1102-secret/-/blob/main/blog.yml
