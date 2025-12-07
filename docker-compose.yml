@@ -3,17 +3,5 @@ services:
   nextjs:
     build: .
     ports:
-      - "30000:3000"
-    restart: unless-stopped
-
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./certs:/etc/nginx/certs
-    depends_on:
-      - nextjs
+      - "3001:3000"  # 主机端口 3001 映射到容器端口 3000
     restart: unless-stopped
