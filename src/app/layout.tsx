@@ -5,6 +5,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "RSS1102 - Blog & Portfolio",
   description: "RSS1102 的技术博客 — 前端工程、性能与工程化心得的分享。",
+  icons: {
+    icon: '/favicon.ico',
+  },
   openGraph: {
     title: "RSS1102 - Blog & Portfolio",
     description: "RSS1102 的技术博客 — 前端工程、性能与工程化心得的分享。",
