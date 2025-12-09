@@ -17,5 +17,5 @@ jobs:
           PLUGIN_TARGET_URL: "https://cnb.cool/rss1102.cnb/blog.git"
           PLUGIN_AUTH_TYPE: "https"
           PLUGIN_USERNAME: "cnb"
-          PLUGIN_PASSWORD: ${{ secrets.CNB_TOKEN }}
+          PLUGIN_PASSWORD: ${{ secrets.CNB_SYNC_TOKEN }}
           PLUGIN_FORCE: "true"
