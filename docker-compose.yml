@@ -3,5 +3,5 @@ services:
   nextjs:
     build: .
     ports:
-      - "3001:3000"  # 主机端口 3001 映射到容器端口 3000
+      - "3000:3000"  # 主机端口 3000 映射到容器端口 3000
     restart: unless-stopped
