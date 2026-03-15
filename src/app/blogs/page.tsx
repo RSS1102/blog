@@ -1,170 +1,179 @@
-import { promises as fs } from 'fs';
-import path from 'path';
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
-import { ParsedUrlQuery } from 'querystring';
+import { motion } from 'framer-motion';
+import { FadeIn, StaggerContainer, StaggerItem } from '../components/Motion';
 import Pagination from '../components/Pagination';
-import PageSection from '../components/PageSection';
-import { Metadata } from 'next';
 
-function extractMetadata(markdown: string) {
-  const lines = markdown.split('\n');
-  let title = '';
-  let description = '';
-  let date = '';
-  let tags: string[] = [];
-
-  for (const line of lines) {
-    if (line.startsWith('# ')) {
-      title = line.substring(2).trim();
-      break;
-    }
-  }
-
-  // 遍历所有行，提取 Date 和 Tags（不提前 break，避免顺序问题）
-  for (const line of lines) {
-    if (line.startsWith('Date: ') || line.startsWith('date: ')) {
-      date = line.substring(line.indexOf(':') + 1).trim();
-    }
-    if (line.toLowerCase().startsWith('tags:')) {
-      // 支持: Tags: tag1, tag2
-      const raw = line.substring(line.indexOf(':') + 1).trim();
-      tags = raw.split(',').map(t => t.trim()).filter(Boolean);
-    }
-  }
-
-  // 查找第一个非空段落作为描述
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (trimmed && !trimmed.startsWith('#') && !trimmed.startsWith('-') && !trimmed.startsWith('*') && !trimmed.startsWith('Date:') && trimmed.length > 10) {
-      description = trimmed;
-      break;
-    }
-  }
-
-  return { title, description, date, tags };
+interface BlogPost {
+  slug: string;
+  title: string;
+  description: string;
+  date: string;
+  views: number;
+  tags: string[];
 }
 
-export default async function BlogsPage({ searchParams }: { searchParams?: Promise<ParsedUrlQuery | undefined> }) {
-  // 本地模拟数据开关：设置为 true 时使用下面的 mock 数据（便于 UI 预览 / 后端未接入时使用）
-  const USE_MOCK = true;
-
-  interface BlogPost {
-    slug: string;
-    title: string;
-    description: string;
-    date: string;
-    views: number;
-    tags: string[];
+const MOCK_POSTS: BlogPost[] = [
+  {
+    slug: 'first-post',
+    title: '在本地使用模拟数据展示列表',
+    description: '示例文章，演示 tags、日期、浏览量等字段（真实数据来自后端）',
+    date: '2025-11-29',
+    views: 234,
+    tags: ['Next.js', '设计', '前端工程']
+  },
+  {
+    slug: 'second-post',
+    title: '第二篇：较多标签示例',
+    description: '这篇文章用于演示当标签多于3个时，最后会显示 ...',
+    date: '2025-11-20',
+    views: 823,
+    tags: ['性能', '渲染', 'UI', '可访问性', '优化']
+  },
+  {
+    slug: 'third-post',
+    title: '第三篇：少量信息示例',
+    description: '简短示例',
+    date: '2025-10-02',
+    views: 102,
+    tags: ['工具']
+  },
+  {
+    slug: 'fourth-post',
+    title: '第四篇：React 性能优化',
+    description: '深入探讨 React 性能优化技巧，包括 useMemo、useCallback 等',
+    date: '2025-09-15',
+    views: 456,
+    tags: ['React', '性能', '优化']
+  },
+  {
+    slug: 'fifth-post',
+    title: '第五篇：TypeScript 进阶',
+    description: 'TypeScript 高级类型、条件类型、映射类型等',
+    date: '2025-08-28',
+    views: 789,
+    tags: ['TypeScript', '前端']
+  },
+  {
+    slug: 'sixth-post',
+    title: '第六篇：CSS 布局技巧',
+    description: '现代 CSS 布局，包括 Flexbox 和 Grid',
+    date: '2025-08-10',
+    views: 321,
+    tags: ['CSS', '布局']
+  },
+  {
+    slug: 'seventh-post',
+    title: '第七篇：Node.js 最佳实践',
+    description: 'Node.js 开发中的最佳实践和常见问题',
+    date: '2025-07-22',
+    views: 567,
+    tags: ['Node.js', '后端']
+  },
+  {
+    slug: 'eighth-post',
+    title: '第八篇：微前端架构',
+    description: '微前端架构设计与实现方案',
+    date: '2025-07-05',
+    views: 890,
+    tags: ['架构', '微前端']
   }
+];
 
-  const MOCK_POSTS: BlogPost[] = [
-    {
-      slug: 'first-post',
-      title: '在本地使用模拟数据展示列表',
-      description: '示例文章，演示 tags、日期、浏览量等字段（真实数据来自后端）',
-      date: '2025-11-29',
-      views: 234,
-      tags: ['Next.js', '设计', '前端工程']
-    },
-    {
-      slug: 'second-post',
-      title: '第二篇：较多标签示例',
-      description: '这篇文章用于演示当标签多于3个时，最后会显示 ...',
-      date: '2025-11-20',
-      views: 823,
-      tags: ['性能', '渲染', 'UI', '可访问性', '优化']
-    },
-    {
-      slug: 'third-post',
-      title: '第三篇：少量信息示例',
-      description: '简短示例',
-      date: '2025-10-02',
-      views: 102,
-      tags: ['工具']
-    }
-  ];
-  const postsDir = path.join(process.cwd(), 'src', 'posts');
-  const files = await fs.readdir(postsDir);
-  const mdFiles = files.filter(file => file.endsWith('.md'));
+const ITEMS_PER_PAGE = 4;
 
-  let posts: BlogPost[] = [];
-  if (USE_MOCK) {
-    // 使用模拟数据（先展示 mock）
-    posts = MOCK_POSTS;
-  } else {
-    posts = await Promise.all(mdFiles.map(async (file) => {
-    const filePath = path.join(postsDir, file);
-    const markdownContent = await fs.readFile(filePath, 'utf-8');
-    const { title, description, date, tags } = extractMetadata(markdownContent);
-    const slug = file.replace('.md', '');
-    return {
-      slug,
-      title: title || slug,
-      description: description || '无描述',
-      date: date || '2023-10-01', // 默认日期
-      views: Math.floor(Math.random() * 1000) + 100, // 模拟浏览人数
-      tags: tags || [],
-    };
-    }));
-  }
+export default function BlogsPage() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(MOCK_POSTS.length / ITEMS_PER_PAGE);
 
-  // 支持 ?page=1 查询参数（服务端分页 / 切片）
-  const pageSize = 5;
-  // searchParams may be a Promise according to Next generated types — await it to handle both cases
-  const _searchParams = await (searchParams as Promise<ParsedUrlQuery | undefined> | ParsedUrlQuery | undefined);
-  const pageNumber = parseInt((((_searchParams && (_searchParams.page as string)) || '1') as string), 10) || 1;
-  const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
-  const start = (pageNumber - 1) * pageSize;
-  const pagePosts = posts.slice(start, start + pageSize);
+  const paginatedPosts = MOCK_POSTS.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   return (
-    <PageSection title="博客" subtitle="技术、工程、性能与实践" variant="blog">
-      <div className="blogs-container">
-        <div className="blogs-grid">
-          {pagePosts.map((post) => (
-            <article key={post.slug} className="blog-card glass">
-              {/* 两行布局：第一行 — 左侧标题 / 右侧最后更新；第二行 — 左侧 tags / 右侧 浏览人数 */}
-              <div className="blog-card-row blog-card-row-top">
-                <h2 className="blog-card-title">
-                  <Link href={`/blog/${post.slug}`}>{post.title}</Link>
-                </h2>
-                <time className="blog-card-date" dateTime={post.date}>
-                  {new Date(post.date).toLocaleDateString('zh-CN')}
-                </time>
-              </div>
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      <FadeIn>
+        {/* Header */}
+        <div className="text-center mb-10">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+            博客
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400">
+            技术、工程、性能与实践
+          </p>
+        </div>
+      </FadeIn>
 
-              <div className="blog-card-row blog-card-row-bottom">
-                <div className="blog-card-tags" aria-label={`Tags: ${post.tags?.join(', ')}`}>
-                  {post.tags && post.tags.length > 0 ? (
-                    post.tags.slice(0, 3).map((t: string, idx: number) => (
-                      <span key={`${t}-${idx}`} className="blog-tag">{t}</span>
-                    ))
-                  ) : (
-                    <span className="blog-tag empty">无标签</span>
-                  )}
-                  {post.tags && post.tags.length > 3 && (
-                    <span className="blog-tag more" title={post.tags.slice(3).join(', ')} aria-hidden={false}>...</span>
-                  )}
-                </div>
-
-                <div className="blog-card-views">浏览 {post.views} 次</div>
-              </div>
-            </article>
+      {/* Posts List */}
+      <StaggerContainer delay={0.1}>
+        <div className="grid gap-6">
+          {paginatedPosts.map((post, index) => (
+            <StaggerItem key={post.slug}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <Link href={`/blog/${post.slug}`}>
+                  <article className="card card-hover p-6 group">
+                    <div className="flex flex-col md:flex-row md:items-center gap-4">
+                      {/* Tags */}
+                      <div className="flex flex-wrap gap-2 self-start">
+                        {post.tags.slice(0, 3).map((tag) => (
+                          <span key={tag} className="tag-primary">
+                            {tag}
+                          </span>
+                        ))}
+                        {post.tags.length > 3 && (
+                          <span className="tag-primary bg-gray-200 dark:bg-gray-700">
+                            +{post.tags.length - 3}
+                          </span>
+                        )}
+                      </div>
+                      
+                      {/* Content */}
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between gap-4 mb-2">
+                          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary transition-colors">
+                            {post.title}
+                          </h2>
+                          <time className="text-sm text-gray-500 whitespace-nowrap">
+                            {post.date}
+                          </time>
+                        </div>
+                        <p className="text-gray-600 dark:text-gray-400">
+                          {post.description}
+                        </p>
+                      </div>
+                      
+                      {/* Arrow */}
+                      <motion.div
+                        className="hidden md:block text-gray-300"
+                        animate={{ x: [0, 5, 0] }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </motion.div>
+                    </div>
+                  </article>
+                </Link>
+              </motion.div>
+            </StaggerItem>
           ))}
         </div>
+      </StaggerContainer>
 
-        <div style={{ marginTop: 18 }}>
-          <Pagination basePath="/blogs" page={pageNumber} totalPages={totalPages} />
-        </div>
-      </div>
-    </PageSection>
+      {/* Pagination */}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
+    </div>
   );
-}
-
-export async function generateMetadata(): Promise<Metadata> {
-  return {
-    title: '博客列表',
-    description: '我的博客文章列表',
-    keywords: '博客, Markdown, Next.js',
-  };
 }

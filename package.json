@@ -10,22 +10,25 @@
   },
   "dependencies": {
     "cherry-markdown": "0.10.3",
+    "framer-motion": "^11.0.0",
     "jsdom": "^27.2.0",
     "next": "16.0.7",
+    "next-themes": "^0.4.0",
     "react": "^19.2.1",
     "react-dom": "^19.2.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",
-    "@tailwindcss/postcss": "^4.1.17",
     "@types/jsdom": "^27.0.0",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
+    "@unocss/reset": "^0.65.0",
+    "@unocss/webpack": "^66.6.6",
     "eslint": "^9.39.1",
     "eslint-config-next": "16.0.7",
-    "tailwindcss": "^4.1.17",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "unocss": "^66.6.6"
   },
   "packageManager": "pnpm@10.18.0+sha512.e804f889f1cecc40d572db084eec3e4881739f8dec69c0ff10d2d1beff9a4e309383ba27b5b750059d7f4c149535b6cd0d2cb1ed3aeb739239a4284a68f40cfa"
 }
