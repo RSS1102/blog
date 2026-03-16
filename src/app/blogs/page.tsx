@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { FadeIn, StaggerContainer, StaggerItem } from '../components/Motion';
 import Pagination from '../components/Pagination';
+import { BlogCardSkeleton } from '../components/Skeleton';
 
 interface BlogPost {
   slug: string;
@@ -86,6 +87,7 @@ const ITEMS_PER_PAGE = 4;
 
 export default function BlogsPage() {
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading] = useState(false); // 模拟加载状态
   const totalPages = Math.ceil(MOCK_POSTS.length / ITEMS_PER_PAGE);
 
   const paginatedPosts = MOCK_POSTS.slice(
@@ -97,11 +99,11 @@ export default function BlogsPage() {
     <div className="max-w-4xl mx-auto px-4 py-8">
       <FadeIn>
         {/* Header */}
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
             博客
           </h1>
-          <p className="text-gray-500 dark:text-gray-400">
+          <p className="text-gray-500 dark:text-gray-300">
             技术、工程、性能与实践
           </p>
         </div>
@@ -109,16 +111,22 @@ export default function BlogsPage() {
 
       {/* Posts List */}
       <StaggerContainer delay={0.1}>
-        <div className="grid gap-6">
-          {paginatedPosts.map((post, index) => (
-            <StaggerItem key={post.slug}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Link href={`/blog/${post.slug}`}>
-                  <article className="card card-hover p-6 group">
+        <div className="grid gap-4">
+          {loading ? (
+            // 显示骨架屏
+            Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
+              <BlogCardSkeleton key={i} />
+            ))
+          ) : (
+            paginatedPosts.map((post, index) => (
+              <StaggerItem key={post.slug}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <Link href={`/blog/${post.slug}`}>
+                    <article className="card card-hover p-5 group">
                     <div className="flex flex-col md:flex-row md:items-center gap-4">
                       {/* Tags */}
                       <div className="flex flex-wrap gap-2 self-start">
@@ -140,11 +148,11 @@ export default function BlogsPage() {
                           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary transition-colors">
                             {post.title}
                           </h2>
-                          <time className="text-sm text-gray-500 whitespace-nowrap">
+                          <time className="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
                             {post.date}
                           </time>
                         </div>
-                        <p className="text-gray-600 dark:text-gray-400">
+                        <p className="text-gray-600 dark:text-gray-300">
                           {post.description}
                         </p>
                       </div>
@@ -164,7 +172,8 @@ export default function BlogsPage() {
                 </Link>
               </motion.div>
             </StaggerItem>
-          ))}
+          ))
+          )}
         </div>
       </StaggerContainer>
 

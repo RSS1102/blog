@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ThemeToggle from './ThemeToggle';
 
@@ -16,6 +16,16 @@ const navItems = [
 export default function Nav() {
   const pathname = usePathname() || '/';
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const isActive = (path: string) => {
     if (path === '/') return pathname === '/';
@@ -24,7 +34,11 @@ export default function Nav() {
   };
 
   return (
-    <header className="sticky top-0 z-50 glass-card !rounded-none border-b border-gray-200/50 dark:border-gray-800/50">
+    <header 
+      className={`sticky top-0 z-50 glass-card !rounded-none border-b border-gray-200/50 dark:border-gray-800/50 transition-all duration-200 ${
+        scrolled ? 'backdrop-blur-xl shadow-lg' : 'backdrop-blur-md'
+      }`}
+    >
       <div className="max-w-6xl mx-auto px-4 md:px-6">
         <nav className="flex-between h-14 md:h-16">
           {/* Logo */}
@@ -90,11 +104,11 @@ export default function Nav() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden border-t border-gray-100 dark:border-gray-800/50 overflow-hidden"
+            className="md:hidden border-t border-gray-100 dark:border-gray-800/50 overflow-hidden backdrop-blur-md"
           >
             <div className="px-4 py-3 space-y-1">
               {navItems.map((item) => (

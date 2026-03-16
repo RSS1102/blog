@@ -56,13 +56,13 @@ export default function BlogPost() {
     // Basic markdown to HTML
     processed = processed
       .replace(/^### (.+)$/gm, '<h3 class="text-xl font-semibold mt-8 mb-4">$1</h3>')
-      .replace(/^## (.+)$/gm, '<h2 class="text-2xl font-semibold mt-10 mb-4">$1</h2>')
-      .replace(/^# (.+)$/gm, '<h1 class="text-3xl font-bold mt-10 mb-4">$1</h1>')
+      .replace(/^## (.+)$/gm, '<h2 class="text-2xl font-semibold mt-10 mb-5">$1</h2>')
+      .replace(/^# (.+)$/gm, '<h1 class="text-3xl font-bold mt-10 mb-5">$1</h1>')
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.+?)\*/g, '<em>$1</em>')
       .replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-sm font-mono">$1</code>')
       .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre class="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg overflow-x-auto my-4"><code class="text-sm font-mono">$2</code></pre>')
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-primary hover:underline">$1</a>')
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-primary hover:text-primary-dark hover:underline transition-colors">$1</a>')
       .replace(/^\- (.+)$/gm, '<li class="ml-4">$1</li>')
       .replace(/\n\n/g, '</p><p class="my-4">')
       .replace(/^(.+)$/gm, (match) => {
@@ -79,28 +79,35 @@ export default function BlogPost() {
         {/* Main Content */}
         <article className="flex-1 min-w-0">
           <FadeIn>
-            {/* Back link */}
+            {/* Back button */}
             <Link
               href="/blogs"
-              className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-primary mb-6 transition-colors"
+              className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-gray-100 dark:bg-dark-card border border-gray-300 dark:border-gray-600 hover:border-primary/50 dark:hover:border-primary/40 hover:bg-gray-200 dark:hover:bg-dark-card/80 transition-all duration-200 group mb-6"
+              aria-label="返回博客列表"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <motion.svg
+                className="w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-primary transition-colors"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                whileHover={{ x: -2 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+              >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              返回博客列表
+              </motion.svg>
             </Link>
           </FadeIn>
 
           <SlideUp>
             {/* Header */}
-            <header className="mb-8">
+            <header className="mb-10">
               {meta?.title && (
-                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-5">
                   {meta.title}
                 </h1>
               )}
               
-              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
                 {meta?.date && (
                   <span className="flex items-center gap-1.5">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

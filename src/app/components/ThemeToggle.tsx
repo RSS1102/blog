@@ -23,7 +23,7 @@ export default function ThemeToggle() {
   return (
     <motion.button
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className="relative w-9 h-9 rounded-lg flex-center bg-gray-100 dark:bg-dark-card border border-gray-200 dark:border-gray-700 hover:border-primary/30 transition-colors"
+      className="relative w-9 h-9 rounded-lg flex-center bg-gray-100 dark:bg-dark-card border border-gray-300 dark:border-gray-600 hover:border-primary/50 dark:hover:border-primary/40 transition-all duration-200"
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       aria-label={isDark ? '切换到浅色模式' : '切换到深色模式'}

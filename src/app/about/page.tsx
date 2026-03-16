@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { FadeIn, SlideUp, StaggerContainer, StaggerItem } from '../components/Motion';
+import { FadeIn, SlideUp } from '../components/Motion';
+import { RepoCardSkeleton } from '../components/Skeleton';
 
 const REPOS = [
   {
@@ -80,10 +81,10 @@ export default function AboutPage() {
               className="w-full h-full object-cover"
             />
           </motion.div>
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
             关于我
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 max-w-lg mx-auto">
+          <p className="text-gray-500 dark:text-gray-300 max-w-lg mx-auto">
             欢迎！我是一名前端工程师，喜欢把想法做成可复用的工具与组件。
           </p>
         </div>
@@ -103,11 +104,7 @@ export default function AboutPage() {
           <div className="grid gap-4 md:grid-cols-2">
             {loading ? (
               Array.from({ length: 2 }).map((_, i) => (
-                <div key={i} className="card p-5 animate-pulse">
-                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-3" />
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2" />
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3" />
-                </div>
+                <RepoCardSkeleton key={i} />
               ))
             ) : (
               repos.map((r) => (
@@ -131,7 +128,7 @@ export default function AboutPage() {
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
                     {r.description}
                   </p>
                 </a>
@@ -142,36 +139,6 @@ export default function AboutPage() {
       </SlideUp>
 
       <SlideUp delay={0.3}>
-        <section className="mb-12">
-          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-3">
-            <span className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center text-secondary">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-              </svg>
-            </span>
-            技术栈
-          </h2>
-          
-          <StaggerContainer>
-            <div className="flex flex-wrap gap-3">
-              {['React', 'Next.js', 'TypeScript', 'Node.js', 'Vue', 'Tailwind CSS', 'UnoCSS', 'Framer Motion'].map((tech, i) => (
-                <StaggerItem key={tech}>
-                  <motion.span
-                    className="tag-primary text-sm"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: i * 0.05 }}
-                  >
-                    {tech}
-                  </motion.span>
-                </StaggerItem>
-              ))}
-            </div>
-          </StaggerContainer>
-        </section>
-      </SlideUp>
-
-      <SlideUp delay={0.4}>
         <section>
           <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-3">
             <span className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-pink-500">
@@ -183,7 +150,7 @@ export default function AboutPage() {
           </h2>
           
           <div className="card p-6">
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
               欢迎通过以下方式与我交流：
             </p>
             <div className="flex flex-wrap gap-4">
