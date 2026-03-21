@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { FadeIn, SlideUp } from '../../components/Motion';
 import TableOfContents from '../../components/TableOfContents';
+import ReadingProgress from '../../components/ReadingProgress';
 
 interface BlogMeta {
   title: string;
@@ -74,8 +75,10 @@ export default function BlogPost() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <div className="flex flex-col lg:flex-row gap-8">
+    <>
+      <ReadingProgress />
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="flex flex-col lg:flex-row gap-8">
         {/* Main Content */}
         <article className="flex-1 min-w-0">
           <FadeIn>
@@ -146,5 +149,6 @@ export default function BlogPost() {
         </aside>
       </div>
     </div>
+    </>
   );
 }

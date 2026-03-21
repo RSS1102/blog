@@ -85,9 +85,17 @@ const MOCK_POSTS: BlogPost[] = [
 
 const ITEMS_PER_PAGE = 4;
 
+// 计算阅读时间（假设每分钟阅读 200 个中文字符）
+function calculateReadingTime(text: string): number {
+  const charsPerMinute = 200;
+  const charCount = text.length;
+  return Math.max(1, Math.ceil(charCount / charsPerMinute));
+}
+
 export default function BlogsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading] = useState(false); // 模拟加载状态
+
   const totalPages = Math.ceil(MOCK_POSTS.length / ITEMS_PER_PAGE);
 
   const paginatedPosts = MOCK_POSTS.slice(
@@ -126,50 +134,54 @@ export default function BlogsPage() {
                   transition={{ delay: index * 0.1 }}
                 >
                   <Link href={`/blog/${post.slug}`}>
-                    <article className="card card-hover p-5 group">
-                    <div className="flex flex-col md:flex-row md:items-center gap-4">
-                      {/* Tags */}
-                      <div className="flex flex-wrap gap-2 self-start">
-                        {post.tags.slice(0, 3).map((tag) => (
-                          <span key={tag} className="tag-primary">
-                            {tag}
-                          </span>
-                        ))}
-                        {post.tags.length > 3 && (
-                          <span className="tag-primary bg-gray-200 dark:bg-gray-700">
-                            +{post.tags.length - 3}
-                          </span>
-                        )}
+                    <article className="card card-hover p-6 group">
+                      {/* Meta Info - Top */}
+                      <div className="flex items-center gap-3 mb-3 text-xs text-gray-500 dark:text-gray-400">
+                        <time>{post.date}</time>
+                        <span>·</span>
+                        <span>📖 {calculateReadingTime(post.description)} 分钟</span>
+                        <span>·</span>
+                        <span>👁 {post.views} 次</span>
                       </div>
-                      
-                      {/* Content */}
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between gap-4 mb-2">
-                          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary transition-colors">
-                            {post.title}
-                          </h2>
-                          <time className="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
-                            {post.date}
-                          </time>
+
+                      {/* Title */}
+                      <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary transition-colors mb-2">
+                        {post.title}
+                      </h2>
+
+                      {/* Description */}
+                      <p className="text-gray-600 dark:text-gray-300 line-clamp-2 mb-4">
+                        {post.description}
+                      </p>
+
+                      {/* Tags & Arrow */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex flex-wrap gap-2">
+                          {post.tags.slice(0, 3).map((tag) => (
+                            <span key={tag} className="tag-primary text-xs">
+                              {tag}
+                            </span>
+                          ))}
+                          {post.tags.length > 3 && (
+                            <span className="tag text-xs bg-gray-200 dark:bg-gray-700">
+                              +{post.tags.length - 3}
+                            </span>
+                          )}
                         </div>
-                        <p className="text-gray-600 dark:text-gray-300">
-                          {post.description}
-                        </p>
+
+                        {/* Arrow */}
+                        <motion.div
+                          className="text-gray-300 group-hover:text-primary transition-colors"
+                          animate={{ x: [0, 5, 0] }}
+                          transition={{ duration: 1.5, repeat: Infinity }}
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </motion.div>
                       </div>
-                      
-                      {/* Arrow */}
-                      <motion.div
-                        className="hidden md:block text-gray-300"
-                        animate={{ x: [0, 5, 0] }}
-                        transition={{ duration: 1.5, repeat: Infinity }}
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </motion.div>
-                    </div>
-                  </article>
-                </Link>
+                    </article>
+                  </Link>
               </motion.div>
             </StaggerItem>
           ))
